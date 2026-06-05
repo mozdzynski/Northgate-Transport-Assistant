@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   Truck, Ship, Package, Calendar, MapPin, Calculator, Leaf, ListOrdered, 
   CheckCircle2, AlertTriangle, Thermometer, Droplets, Fuel, ArrowRight, 
-  User, RefreshCw, Activity, Search, ShieldAlert, Award
+  User, RefreshCw, Activity, Search, ShieldAlert, Award, Menu, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -44,6 +44,7 @@ interface TrackingData {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'calculator' | 'tracking' | 'orders' | 'eco'>('calculator');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cargoType, setCargoType] = useState('palette');
   const [routeFrom, setRouteFrom] = useState('');
   const [routeTo, setRouteTo] = useState('');
@@ -175,10 +176,39 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-[#070D19] text-slate-100 font-sans overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[#070D19] text-slate-100 font-sans overflow-hidden">
       
+      {/* Mobile Top Header */}
+      <div className="md:hidden bg-[#0A1628] border-b border-slate-800 px-6 py-4 flex justify-between items-center shrink-0 z-40">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#F26522] rounded flex items-center justify-center font-black text-md text-white shadow-md shadow-orange-500/10">N</div>
+          <div>
+            <span className="text-sm font-black tracking-wider uppercase text-white">Northgate</span>
+            <span className="block text-[8px] text-[#F26522] font-bold tracking-widest uppercase">Portal</span>
+          </div>
+        </div>
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+          className="p-1 text-slate-400 hover:text-white focus:outline-none"
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          onClick={() => setIsMobileMenuOpen(false)} 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+        />
+      )}
+
       {/* SIDEBAR */}
-      <aside className="w-72 bg-[#0A1628] border-r border-slate-800 flex flex-col justify-between shrink-0">
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-72 bg-[#0A1628] border-r border-slate-800 flex flex-col justify-between shrink-0 transform transition-transform duration-300 ease-in-out
+        md:relative md:translate-x-0 md:z-auto
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
         <div>
           {/* Logo */}
           <div className="p-6 flex items-center gap-3 border-b border-slate-800">
@@ -192,21 +222,21 @@ export default function App() {
           {/* Navigation Links */}
           <nav className="p-4 space-y-1">
             <button 
-              onClick={() => setActiveTab('calculator')}
+              onClick={() => { setActiveTab('calculator'); setIsMobileMenuOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === 'calculator' ? 'bg-[#F26522] text-white shadow-md shadow-orange-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
             >
               <Calculator className="w-5 h-5" />
               Kalkulator AI
             </button>
             <button 
-              onClick={() => setActiveTab('tracking')}
+              onClick={() => { setActiveTab('tracking'); setIsMobileMenuOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === 'tracking' ? 'bg-[#F26522] text-white shadow-md shadow-orange-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
             >
               <Activity className="w-5 h-5" />
               Śledzenie Live
             </button>
             <button 
-              onClick={() => setActiveTab('orders')}
+              onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === 'orders' ? 'bg-[#F26522] text-white shadow-md shadow-orange-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
             >
               <ListOrdered className="w-5 h-5" />
@@ -216,7 +246,7 @@ export default function App() {
               )}
             </button>
             <button 
-              onClick={() => setActiveTab('eco')}
+              onClick={() => { setActiveTab('eco'); setIsMobileMenuOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition ${activeTab === 'eco' ? 'bg-[#F26522] text-white shadow-md shadow-orange-500/10' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
             >
               <Leaf className="w-5 h-5" />
@@ -243,24 +273,24 @@ export default function App() {
       <div className="flex-1 flex flex-col overflow-hidden">
         
         {/* TOP NAVBAR */}
-        <header className="h-16 border-b border-slate-800 bg-[#0A1628]/50 backdrop-blur px-8 flex justify-between items-center shrink-0">
-          <h2 className="text-sm font-bold tracking-wider text-slate-400 uppercase">
+        <header className="h-16 border-b border-slate-800 bg-[#0A1628]/50 backdrop-blur px-4 md:px-8 flex justify-between items-center shrink-0">
+          <h2 className="text-xs md:text-sm font-bold tracking-wider text-slate-400 uppercase">
             {activeTab === 'calculator' && 'Inteligentny Asystent Wycen'}
             {activeTab === 'tracking' && 'Monitorowanie Telemetryczne Pojazdów'}
             {activeTab === 'orders' && 'Baza Aktywnych Zamówień'}
             {activeTab === 'eco' && 'Raporty Oszczędności CO₂'}
           </h2>
 
-          <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
+          <div className="flex items-center gap-4 text-[10px] md:text-xs font-bold text-slate-400">
             <span className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
-              Serwer AI Online
+              <span className="hidden sm:inline">Serwer AI Online</span>
             </span>
           </div>
         </header>
 
         {/* CONTENT AREA */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
           {bookingSuccess && (
             <motion.div 
               initial={{ opacity: 0, y: -20 }} 
@@ -287,7 +317,7 @@ export default function App() {
                 className="space-y-6"
               >
                 <div>
-                  <h1 className="text-3xl font-black text-white">Kalkulator Wyceń i Tras AI</h1>
+                  <h1 className="text-3xl font-black text-white">Kalkulator Wycen i Tras AI</h1>
                   <p className="text-sm text-slate-400">Optymalizuj trasę, szacuj koszty i redukuj emisje CO₂ z pomocą asystenta Gemini.</p>
                 </div>
 
